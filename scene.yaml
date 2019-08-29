@@ -1664,6 +1664,28 @@ styles:
                     }
                     #endif
 
+    tools-grid-water:
+        mix: space-tile
+        shaders:
+            blocks:
+                global: |
+                    #ifdef TANGRAM_FRAGMENT_SHADER
+                    bool grid(vec2 st, float res, float press) {
+                        vec2 grid = fract(st * res);
+                        return (grid.x < res * press) || (grid.y < res * press);
+                    }
+                    float TileGrid(float res) {
+                        vec2 st = getTileCoords() * 200. * res;
+                        float pct = 0.0;
+                        float press = 0.6 + (1.0 - fract(u_map_position.z)) * 0.1;
+                        if (grid(st, 0.1, press)) { pct += 0.75; }
+                        return pct;
+                    }
+                    float TileGrid() {
+                        return mix(TileGrid(1.), TileGrid(2.), fract(u_map_position.z));
+                    }
+                    #endif
+
     tools-grid3:
         mix: space-tile
         shaders:
@@ -1701,28 +1723,6 @@ styles:
                         float pct = 0.0;
                         float press = 0.9 + (1.0 - fract(u_map_position.z)) * 0.1;
                         if (grid(st, 0.1, press)) { pct += 0.21; }
-                        return pct;
-                    }
-                    float TileGrid() {
-                        return mix(TileGrid(1.), TileGrid(2.), fract(u_map_position.z));
-                    }
-                    #endif
-
-    tools-grid5:
-        mix: space-tile
-        shaders:
-            blocks:
-                global: |
-                    #ifdef TANGRAM_FRAGMENT_SHADER
-                    bool grid(vec2 st, float res, float press) {
-                        vec2 grid = fract(st * res);
-                        return (grid.x < res * press) || (grid.y < res * press);
-                    }
-                    float TileGrid(float res) {
-                        vec2 st = getTileCoords() * 200. * res;
-                        float pct = 0.0;
-                        float press = 0.6 + (1.0 - fract(u_map_position.z)) * 0.1;
-                        if (grid(st, 0.1, press)) { pct += 0.5; }
                         return pct;
                     }
                     float TileGrid() {
